@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Days Since Last ImageMagick CVE</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #daysSinceLastCVE {
+            font-weight: bold;
+            margin-top: 20px;
+            color: #555;
+        }
+
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 6px solid #3498db;
+            width: 60px;
+            height: 60px;
+            animation: spin 2s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <h3>Days Since Last ImageMagick CVE</h3>
+    <h1 id="daysSinceLastCVE">
+        <div class="loader"></div>
+    </h1>
+    <script>
+        const cveApiUrl = 'https://services.nvd.nist.gov/rest/json/cves/1.0?keyword=imagemagick&resultsPerPage=10';
+
+        async function fetchCveData() {
+            const response = await fetch(cveApiUrl);
+            const cveData = await response.json();
+            return cveData;
+        }
+
+        function calculateDaysSinceLastCve(cveData) {
+            const lastCveDate = new Date(cveData.result.CVE_Items[0].publishedDate);
+            const currentDate = new Date();
+            const timeDifference = currentDate - lastCveDate;
+            const daysDifference = Math.floor(timeDifference / (1000 * 3600 * 24));
+            return daysDifference;
+        }
+
+        async function displayDaysSinceLastCve() {
+            const cveData = await fetchCveData();
+            const daysSinceLastCve = calculateDaysSinceLastCve(cveData);
+            document.getElementById('daysSinceLastCVE').innerHTML = daysSinceLastCve;
+        }
+
+        displayDaysSinceLastCve();
+    </script>
+</body>
+</html>
